@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block page_title %}Category Analytics{% endblock %}
+{% block content %}
+
+<div class="card p-3 mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">From Date</label>
+            <input type="date" name="date_from" value="{{ date_from }}" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">To Date</label>
+            <input type="date" name="date_to" value="{{ date_to }}" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary btn-sm w-100">Apply Filter</button>
+        </div>
+    </form>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-2"><i class="bi bi-bar-chart text-primary me-2"></i>Revenue by Category</h6>
+            <div id="catRevenueChart"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-2"><i class="bi bi-boxes text-success me-2"></i>Units Sold by Category</h6>
+            <div id="catQtyChart"></div>
+        </div>
+    </div>
+</div>
+
+<div class="card p-3">
+    <h6 class="fw-semibold mb-3">Category Performance Table</h6>
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr><th>Category</th><th>Products</th><th>Units Sold</th><th>Revenue</th><th>Avg Qty/Sale</th></tr>
+        </thead>
+        <tbody>
+        {% for c in category_data %}
+        <tr>
+            <td class="fw-semibold">{{ c.product__category|default:"Uncategorized" }}</td>
+            <td>{{ c.num_products }}</td>
+            <td>{{ c.total_qty }}</td>
+            <td class="text-success fw-semibold">${{ c.total_revenue|floatformat:2 }}</td>
+            <td>{{ c.avg_qty|floatformat:1 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center text-muted py-4">No data for selected range.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+Plotly.newPlot('catRevenueChart', [{
+    x: {{ cat_labels|safe }},
+    y: {{ cat_revenue|safe }},
+    type: 'bar',
+    marker: {color: ['#0d6efd','#198754','#ffc107','#dc3545','#6f42c1','#fd7e14']}
+}], {margin:{t:10,b:80,l:60,r:10}, height:250, paper_bgcolor:'transparent', plot_bgcolor:'transparent', xaxis:{tickangle:-30}}, {responsive:true});
+
+Plotly.newPlot('catQtyChart', [{
+    x: {{ cat_labels|safe }},
+    y: {{ cat_qty|safe }},
+    type: 'bar',
+    marker: {color: ['#198754','#0d6efd','#dc3545','#ffc107','#fd7e14','#6f42c1']}
+}], {margin:{t:10,b:80,l:60,r:10}, height:250, paper_bgcolor:'transparent', plot_bgcolor:'transparent', xaxis:{tickangle:-30}}, {responsive:true});
+</script>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block page_title %}Profit & Loss Report{% endblock %}
+{% block content %}
+
+<div class="card p-3 mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">From Date</label>
+            <input type="date" name="date_from" value="{{ date_from }}" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">To Date</label>
+            <input type="date" name="date_to" value="{{ date_to }}" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary btn-sm w-100">Apply Filter</button>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'export_pl_excel' %}?date_from={{ date_from }}&date_to={{ date_to }}" class="btn btn-success btn-sm">
+                <i class="bi bi-file-earmark-excel me-1"></i>Export Excel
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Summary KPIs -->
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <div class="card stat-card blue p-3">
+            <div class="text-muted small">Total Revenue</div>
+            <div class="fs-4 fw-bold text-primary">${{ total_rev }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card red p-3">
+            <div class="text-muted small">Estimated Cost</div>
+            <div class="fs-4 fw-bold text-danger">${{ total_cost }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card green p-3">
+            <div class="text-muted small">Gross Profit</div>
+            <div class="fs-4 fw-bold text-success">${{ total_profit }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card orange p-3">
+            <div class="text-muted small">Profit Margin</div>
+            <div class="fs-4 fw-bold text-warning">{{ total_margin }}%</div>
+        </div>
+    </div>
+</div>
+
+<!-- P&L Chart -->
+<div class="card p-3 mb-3">
+    <h6 class="fw-semibold mb-2"><i class="bi bi-currency-dollar text-success me-2"></i>Monthly Revenue vs Cost vs Profit</h6>
+    <div id="plChart"></div>
+</div>
+
+<!-- P&L Table -->
+<div class="card p-3">
+    <h6 class="fw-semibold mb-3">Monthly Breakdown</h6>
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr><th>Month</th><th>Units</th><th>Revenue</th><th>Est. Cost</th><th>Gross Profit</th><th>Margin</th></tr>
+        </thead>
+        <tbody>
+        {% for row in pl_data %}
+        <tr>
+            <td class="fw-semibold">{{ row.month }}</td>
+            <td>{{ row.units }}</td>
+            <td class="text-primary">${{ row.revenue }}</td>
+            <td class="text-danger">${{ row.cost }}</td>
+            <td class="{% if row.profit > 0 %}text-success{% else %}text-danger{% endif %} fw-semibold">${{ row.profit }}</td>
+            <td>
+                <div class="progress" style="height:16px;min-width:80px;">
+                    <div class="progress-bar bg-success" style="width:{{ row.margin }}%"></div>
+                </div>
+                <small>{{ row.margin }}%</small>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">No data for selected range.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+const labels = {{ pl_labels|safe }};
+Plotly.newPlot('plChart', [
+    {x: labels, y: {{ pl_revenue|safe }}, name: 'Revenue', type: 'bar', marker: {color: '#0d6efd'}},
+    {x: labels, y: {{ pl_cost|safe }}, name: 'Cost', type: 'bar', marker: {color: '#dc3545'}},
+    {x: labels, y: {{ pl_profit|safe }}, name: 'Profit', type: 'scatter', mode: 'lines+markers',
+     line: {color: '#198754', width: 3}, marker: {color: '#198754', size: 8}}
+], {
+    barmode: 'group',
+    margin: {t:10, b:50, l:70, r:10},
+    height: 300,
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    legend: {orientation: 'h', y: -0.2}
+}, {responsive: true});
+</script>
+{% endblock %}

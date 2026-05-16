@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block page_title %}Reorder Alerts{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="fw-semibold mb-0">Reorder Alerts</h6>
+    <a href="{% url 'run_forecast' %}" class="btn btn-info btn-sm text-white"><i class="bi bi-arrow-clockwise me-1"></i>Refresh Alerts</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Product</th><th>Current Stock</th><th>Predicted Demand</th><th>Status</th><th>Created</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+            {% for alert in alerts %}
+            <tr>
+                <td class="fw-semibold">{{ alert.product.name }}</td>
+                <td><span class="badge bg-danger">{{ alert.current_stock }}</span></td>
+                <td>{{ alert.predicted_demand }}</td>
+                <td>
+                    {% if alert.status == 'pending' %}
+                    <span class="badge badge-pending px-2 py-1">Pending</span>
+                    {% else %}
+                    <span class="badge badge-resolved px-2 py-1">Resolved</span>
+                    {% endif %}
+                </td>
+                <td class="text-muted small">{{ alert.created_at|date:"M d, Y" }}</td>
+                <td>
+                    {% if alert.status == 'pending' %}
+                    <a href="{% url 'resolve_alert' alert.pk %}" class="btn btn-sm btn-outline-success">Resolve</a>
+                    {% else %}
+                    <span class="text-muted small">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center text-muted py-4">No alerts. All stock levels are healthy.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

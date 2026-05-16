@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block page_title %}Association Rules{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="fw-semibold mb-0">Association Rules (Apriori)</h6>
+    <a href="{% url 'run_mining' %}" class="btn btn-dark btn-sm"><i class="bi bi-cpu me-1"></i>Run Mining</a>
+</div>
+
+<div class="card mb-3 p-3 bg-light border-0">
+    <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Shows which products are frequently sold together. <strong>Lift > 1</strong> means a positive association. Higher lift = stronger relationship.</small>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>If Sold (Antecedent)</th><th>Then Also (Consequent)</th><th>Support</th><th>Confidence</th><th>Lift</th></tr>
+            </thead>
+            <tbody>
+            {% for rule in rules %}
+            <tr>
+                <td class="fw-semibold">{{ rule.antecedent }}</td>
+                <td class="text-primary">{{ rule.consequent }}</td>
+                <td>{{ rule.support|floatformat:3 }}</td>
+                <td>
+                    <div class="progress" style="height:16px;width:80px;">
+                        <div class="progress-bar bg-success" style="width:{{ rule.confidence|floatformat:0 }}%"></div>
+                    </div>
+                    <small>{{ rule.confidence|floatformat:2 }}</small>
+                </td>
+                <td>
+                    {% if rule.lift >= 2 %}<span class="badge bg-success">{{ rule.lift|floatformat:2 }}</span>
+                    {% elif rule.lift >= 1 %}<span class="badge bg-warning text-dark">{{ rule.lift|floatformat:2 }}</span>
+                    {% else %}<span class="badge bg-secondary">{{ rule.lift|floatformat:2 }}</span>{% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    No association rules yet. Add more sales data across multiple dates and click <a href="{% url 'run_mining' %}">Run Mining</a>.
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

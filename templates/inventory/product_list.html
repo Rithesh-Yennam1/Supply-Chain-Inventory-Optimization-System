@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block page_title %}Products{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="fw-semibold mb-0">All Products</h6>
+    <a href="{% url 'product_add' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i>Add Product</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Name</th><th>Category</th><th>Stock</th><th>Price</th><th>Threshold</th><th>Warehouse</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+            <tr>
+                <td class="fw-semibold">{{ product.name }}</td>
+                <td>{{ product.category|default:"-" }}</td>
+                <td>
+                    {% if product.is_low_stock %}
+                    <span class="badge bg-danger">{{ product.stock }}</span>
+                    {% else %}
+                    <span class="badge bg-success">{{ product.stock }}</span>
+                    {% endif %}
+                </td>
+                <td>${{ product.price }}</td>
+                <td>{{ product.reorder_threshold }}</td>
+                <td>{{ product.warehouse|default:"-" }}</td>
+                <td>
+                    {% if product.is_low_stock %}
+                    <span class="badge bg-danger">Low Stock</span>
+                    {% else %}
+                    <span class="badge bg-success">In Stock</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'product_edit' product.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                    <a href="{% url 'product_delete' product.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" class="text-center text-muted py-4">No products found. <a href="{% url 'product_add' %}">Add one</a>.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

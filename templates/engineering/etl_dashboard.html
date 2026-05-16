@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block page_title %}ETL Pipelines{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="fw-semibold mb-0">ETL Pipeline Dashboard</h6>
+    <div class="d-flex gap-2">
+        <a href="{% url 'run_etl' %}" class="btn btn-primary btn-sm"><i class="bi bi-play-fill me-1"></i>Run All Pipelines</a>
+        <a href="{% url 'data_import' %}" class="btn btn-success btn-sm"><i class="bi bi-upload me-1"></i>Import Data</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <i class="bi bi-gear-wide-connected fs-2 text-primary"></i>
+            <div class="fw-semibold mt-1">Daily Summary ETL</div>
+            <small class="text-muted">Aggregates sales into daily warehouse table</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <i class="bi bi-diagram-3 fs-2 text-success"></i>
+            <div class="fw-semibold mt-1">Clustering ETL</div>
+            <small class="text-muted">K-Means product segmentation</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <i class="bi bi-exclamation-octagon fs-2 text-danger"></i>
+            <div class="fw-semibold mt-1">Anomaly Detection ETL</div>
+            <small class="text-muted">Isolation Forest on sales data</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-3">Pipeline Run Logs</h6>
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light"><tr><th>Pipeline</th><th>Status</th><th>Records</th><th>Message</th><th>Time</th></tr></thead>
+                <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td class="fw-semibold small">{{ log.pipeline_name }}</td>
+                    <td>
+                        {% if log.status == 'success' %}<span class="badge bg-success">Success</span>
+                        {% elif log.status == 'failed' %}<span class="badge bg-danger">Failed</span>
+                        {% else %}<span class="badge bg-warning text-dark">Running</span>{% endif %}
+                    </td>
+                    <td>{{ log.records_processed }}</td>
+                    <td class="small text-muted">{{ log.message|truncatechars:40 }}</td>
+                    <td class="small text-muted">{{ log.started_at|date:"M d H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-3">No pipeline runs yet. Click "Run All Pipelines".</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-3">Daily Sales Warehouse</h6>
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light"><tr><th>Date</th><th>Qty</th><th>Revenue</th></tr></thead>
+                <tbody>
+                {% for s in summaries %}
+                <tr>
+                    <td class="small">{{ s.date }}</td>
+                    <td>{{ s.total_quantity }}</td>
+                    <td>${{ s.total_revenue }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-center text-muted py-3">No summaries yet.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

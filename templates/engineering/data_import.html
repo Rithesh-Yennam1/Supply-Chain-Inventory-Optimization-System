@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block page_title %}Data Import{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card p-4">
+            <h6 class="fw-semibold mb-3"><i class="bi bi-upload me-2 text-success"></i>Import Data from CSV / Excel</h6>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Import Type</label>
+                    <select name="import_type" class="form-control">
+                        <option value="products">Products</option>
+                        <option value="sales">Sales</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Select File (.csv or .xlsx)</label>
+                    <input type="file" name="file" class="form-control" accept=".csv,.xlsx,.xls" required>
+                </div>
+                <button type="submit" class="btn btn-success">Upload & Import</button>
+            </form>
+        </div>
+
+        <div class="card p-4 mt-3">
+            <h6 class="fw-semibold mb-3">Expected File Format</h6>
+            <div class="mb-3">
+                <strong class="small">Products CSV columns:</strong>
+                <code class="d-block mt-1 p-2 bg-light rounded small">name, category, stock, price, reorder_threshold, warehouse</code>
+            </div>
+            <div>
+                <strong class="small">Sales CSV columns:</strong>
+                <code class="d-block mt-1 p-2 bg-light rounded small">product_name, quantity_sold, sale_date</code>
+            </div>
+            <p class="text-muted small mt-2">Date format: YYYY-MM-DD (e.g. 2024-01-15)</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card blue p-3">
+            <div class="text-muted small">Total Products</div>
+            <div class="fs-3 fw-bold text-primary">{{ total_products }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card red p-3">
+            <div class="text-muted small">Low Stock Items</div>
+            <div class="fs-3 fw-bold text-danger">{{ low_stock }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card orange p-3">
+            <div class="text-muted small">Pending Alerts</div>
+            <div class="fs-3 fw-bold text-warning">{{ pending_alerts }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card green p-3">
+            <div class="text-muted small">Total Units Sold</div>
+            <div class="fs-3 fw-bold text-success">{{ total_sales }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card blue p-3">
+            <div class="text-muted small">Total Revenue</div>
+            <div class="fs-3 fw-bold text-primary">${{ total_revenue }}</div>
+        </div>
+    </div>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card red p-3">
+            <div class="text-muted small">Sales Anomalies</div>
+            <div class="fs-3 fw-bold text-danger">{{ anomaly_count }}</div>
+            <a href="{% url 'anomaly' %}" class="small text-danger">View Details</a>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-2"><i class="bi bi-gear-wide-connected text-primary me-2"></i>Data Engineering & Mining</h6>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'run_etl' %}" class="btn btn-sm btn-primary"><i class="bi bi-play-fill me-1"></i>Run ETL Now</a>
+                <a href="{% url 'run_mining' %}" class="btn btn-sm btn-dark"><i class="bi bi-cpu me-1"></i>Run Mining</a>
+                <a href="{% url 'etl_dashboard' %}" class="btn btn-sm btn-outline-primary">ETL Logs</a>
+                <a href="{% url 'clustering' %}" class="btn btn-sm btn-outline-secondary">Clusters</a>
+                <a href="{% url 'association_rules' %}" class="btn btn-sm btn-outline-secondary">Rules</a>
+                <a href="{% url 'data_import' %}" class="btn btn-sm btn-outline-success">Import Data</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-3"><i class="bi bi-bell-fill text-warning me-2"></i>Pending Reorder Alerts</h6>
+            {% if recent_alerts %}
+            <table class="table table-sm table-hover">
+                <thead><tr><th>Product</th><th>Stock</th><th>Predicted</th></tr></thead>
+                <tbody>
+                {% for alert in recent_alerts %}
+                <tr>
+                    <td>{{ alert.product.name }}</td>
+                    <td><span class="badge bg-danger">{{ alert.current_stock }}</span></td>
+                    <td>{{ alert.predicted_demand }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <a href="{% url 'alert_list' %}" class="btn btn-sm btn-outline-warning">View All Alerts</a>
+            {% else %}
+            <p class="text-muted">No pending alerts.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-3"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Low Stock Products</h6>
+            {% if low_stock_products %}
+            <table class="table table-sm table-hover">
+                <thead><tr><th>Product</th><th>Stock</th><th>Threshold</th></tr></thead>
+                <tbody>
+                {% for p in low_stock_products %}
+                <tr>
+                    <td>{{ p.name }}</td>
+                    <td><span class="badge bg-danger">{{ p.stock }}</span></td>
+                    <td>{{ p.reorder_threshold }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-danger">View All Products</a>
+            {% else %}
+            <p class="text-muted">All products are well stocked.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-12">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-3"><i class="bi bi-lightning-fill text-primary me-2"></i>Quick Actions</h6>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'product_add' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i>Add Product</a>
+                <a href="{% url 'sale_add' %}" class="btn btn-success btn-sm"><i class="bi bi-cart-plus me-1"></i>Record Sale</a>
+                <a href="{% url 'run_forecast' %}" class="btn btn-info btn-sm text-white"><i class="bi bi-graph-up me-1"></i>Run Forecast</a>
+                <a href="{% url 'report' %}" class="btn btn-secondary btn-sm"><i class="bi bi-file-earmark-bar-graph me-1"></i>View Reports</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

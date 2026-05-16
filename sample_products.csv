@@ -1,0 +1,31 @@
+name,category,stock,price,reorder_threshold,warehouse
+Laptop Pro 15,Electronics,120,899.99,20,Warehouse A
+Wireless Mouse,Electronics,350,29.99,50,Warehouse A
+Mechanical Keyboard,Electronics,200,79.99,30,Warehouse A
+USB-C Hub,Electronics,180,49.99,25,Warehouse A
+Monitor 27inch,Electronics,75,349.99,15,Warehouse B
+Webcam HD,Electronics,160,89.99,20,Warehouse A
+Headphones Pro,Electronics,220,149.99,30,Warehouse B
+Smartphone X12,Electronics,95,699.99,15,Warehouse B
+Tablet 10inch,Electronics,110,399.99,20,Warehouse B
+Bluetooth Speaker,Electronics,190,59.99,25,Warehouse A
+Office Chair,Furniture,60,249.99,10,Warehouse C
+Standing Desk,Furniture,40,499.99,8,Warehouse C
+Desk Lamp,Furniture,150,34.99,20,Warehouse C
+Bookshelf,Furniture,55,129.99,10,Warehouse C
+Filing Cabinet,Furniture,45,179.99,8,Warehouse C
+Printer A4,Office Supplies,80,199.99,15,Warehouse A
+A4 Paper Ream,Office Supplies,500,12.99,100,Warehouse C
+Ballpoint Pens Box,Office Supplies,300,8.99,50,Warehouse C
+Stapler Heavy Duty,Office Supplies,120,19.99,20,Warehouse C
+Whiteboard Large,Office Supplies,65,89.99,10,Warehouse C
+Running Shoes,Sports,140,119.99,25,Warehouse D
+Yoga Mat,Sports,200,39.99,30,Warehouse D
+Dumbbells Set,Sports,85,89.99,15,Warehouse D
+Water Bottle,Sports,320,24.99,50,Warehouse D
+Resistance Bands,Sports,175,19.99,30,Warehouse D
+Coffee Maker,Kitchen,95,129.99,15,Warehouse B
+Blender Pro,Kitchen,70,79.99,12,Warehouse B
+Air Fryer,Kitchen,60,99.99,10,Warehouse B
+Microwave Oven,Kitchen,50,149.99,8,Warehouse B
+Electric Kettle,Kitchen,130,39.99,20,Warehouse B

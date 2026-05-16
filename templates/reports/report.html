@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block page_title %}Reports & Analytics{% endblock %}
+{% block content %}
+
+<!-- Date Filter -->
+<div class="card p-3 mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">From Date</label>
+            <input type="date" name="date_from" value="{{ date_from }}" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">To Date</label>
+            <input type="date" name="date_to" value="{{ date_to }}" class="form-control form-control-sm">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary btn-sm w-100">Apply Filter</button>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'export_sales_excel' %}?date_from={{ date_from }}&date_to={{ date_to }}" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-excel me-1"></i>Export Excel</a>
+            <a href="{% url 'export_sales_pdf' %}?date_from={{ date_from }}&date_to={{ date_to }}" class="btn btn-danger btn-sm"><i class="bi bi-file-earmark-pdf me-1"></i>Export PDF</a>
+        </div>
+    </form>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row g-3 mb-3">
+    <div class="col-md-8">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-2"><i class="bi bi-graph-up text-success me-2"></i>Monthly Revenue Trend</h6>
+            <div id="revenueChart"></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-2"><i class="bi bi-pie-chart text-primary me-2"></i>Sales by Category</h6>
+            <div id="categoryPieChart"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-2"><i class="bi bi-bar-chart-fill text-primary me-2"></i>Top 10 Products</h6>
+            <div id="topProductsChart"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6 class="fw-semibold mb-2"><i class="bi bi-graph-up-arrow text-warning me-2"></i>Monthly Units Sold</h6>
+            <div id="monthlySalesChart"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Table -->
+<div class="card p-3 mb-3">
+    <h6 class="fw-semibold mb-3">Category Breakdown</h6>
+    <table class="table table-sm table-hover">
+        <thead class="table-light"><tr><th>Category</th><th>Units Sold</th><th>Revenue</th></tr></thead>
+        <tbody>
+        {% for c in category_sales %}
+        <tr>
+            <td class="fw-semibold">{{ c.product__category|default:"Uncategorized" }}</td>
+            <td>{{ c.total }}</td>
+            <td>${{ c.revenue|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="text-center text-muted">No data for selected range.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Top Products Table -->
+<div class="card p-3">
+    <h6 class="fw-semibold mb-3">Top Products Table</h6>
+    <table class="table table-sm table-hover">
+        <thead class="table-light"><tr><th>#</th><th>Product</th><th>Total Sold</th></tr></thead>
+        <tbody>
+        {% for item in top_products %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.product__name }}</td>
+            <td><span class="badge bg-primary">{{ item.total }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="text-center text-muted">No sales data for selected range.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+// Revenue trend
+Plotly.newPlot('revenueChart', [{
+    x: {{ month_revenue_labels|safe }},
+    y: {{ month_revenue_data|safe }},
+    type: 'scatter', mode: 'lines+markers', fill: 'tozeroy',
+    line: {color: '#198754', width: 2},
+    marker: {color: '#198754'},
+    name: 'Revenue ($)'
+}], {margin:{t:10,b:40,l:60,r:10}, height:220, paper_bgcolor:'transparent', plot_bgcolor:'transparent'}, {responsive:true});
+
+// Category pie
+Plotly.newPlot('categoryPieChart', [{
+    labels: {{ cat_labels|safe }},
+    values: {{ cat_data|safe }},
+    type: 'pie', hole: 0.4,
+    marker: {colors: ['#0d6efd','#198754','#ffc107','#dc3545','#6f42c1','#fd7e14']}
+}], {margin:{t:10,b:10,l:10,r:10}, height:220, showlegend:true, paper_bgcolor:'transparent'}, {responsive:true});
+
+// Top products bar
+Plotly.newPlot('topProductsChart', [{
+    x: {{ top_data|safe }},
+    y: {{ top_labels|safe }},
+    type: 'bar', orientation: 'h',
+    marker: {color: '#0d6efd'}
+}], {margin:{t:10,b:40,l:150,r:10}, height:220, paper_bgcolor:'transparent', plot_bgcolor:'transparent'}, {responsive:true});
+
+// Monthly units
+Plotly.newPlot('monthlySalesChart', [{
+    x: {{ month_labels|safe }},
+    y: {{ month_data|safe }},
+    type: 'bar',
+    marker: {color: '#ffc107'}
+}], {margin:{t:10,b:40,l:50,r:10}, height:220, paper_bgcolor:'transparent', plot_bgcolor:'transparent'}, {responsive:true});
+</script>
+{% endblock %}

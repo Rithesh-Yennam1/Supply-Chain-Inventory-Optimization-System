@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block page_title %}Anomaly Detection{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="fw-semibold mb-0">Sales Anomaly Detection (Isolation Forest)</h6>
+    <a href="{% url 'run_mining' %}" class="btn btn-dark btn-sm"><i class="bi bi-cpu me-1"></i>Run Mining</a>
+</div>
+
+<div class="card mb-3 p-3 bg-light border-0">
+    <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Isolation Forest detects unusual sales patterns. <strong>Anomalies</strong> are sales records that deviate significantly from normal behavior — could indicate fraud, data errors, or unusual demand spikes.</small>
+</div>
+
+{% if anomalies %}
+<div class="card mb-3 p-3 border-danger">
+    <h6 class="fw-semibold text-danger mb-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>{{ anomalies|length }} Anomalies Detected</h6>
+    <table class="table table-sm table-hover mb-0">
+        <thead class="table-light"><tr><th>Product</th><th>Date</th><th>Qty Sold</th><th>Anomaly Score</th></tr></thead>
+        <tbody>
+        {% for a in anomalies %}
+        <tr class="table-danger">
+            <td class="fw-semibold">{{ a.product.name }}</td>
+            <td>{{ a.sale_date }}</td>
+            <td>{{ a.quantity_sold }}</td>
+            <td><span class="badge bg-danger">{{ a.anomaly_score|floatformat:3 }}</span></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="card p-3">
+    <h6 class="fw-semibold mb-3">All Analyzed Records (Last 50)</h6>
+    <table class="table table-sm table-hover mb-0">
+        <thead class="table-light"><tr><th>Product</th><th>Date</th><th>Qty Sold</th><th>Score</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for r in all_records %}
+        <tr {% if r.is_anomaly %}class="table-danger"{% endif %}>
+            <td class="fw-semibold small">{{ r.product.name }}</td>
+            <td class="small">{{ r.sale_date }}</td>
+            <td>{{ r.quantity_sold }}</td>
+            <td class="small">{{ r.anomaly_score|floatformat:3 }}</td>
+            <td>
+                {% if r.is_anomaly %}<span class="badge bg-danger">Anomaly</span>
+                {% else %}<span class="badge bg-success">Normal</span>{% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center text-muted py-4">No anomaly data yet. Add sales data and click <a href="{% url 'run_mining' %}">Run Mining</a>.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
